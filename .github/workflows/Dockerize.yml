@@ -1,0 +1,38 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Dockerize Spring Boot Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+
+    - name: Build with Maven
+      run: mvn clean install
+
+    - name: Build Docker image
+      run: docker build -t citizen-dockerize.
+
+    - name: Push Docker image to Container Registry
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: your-docker-repo/your-image-name:latest
+        dockerfile: Dockerfile
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
